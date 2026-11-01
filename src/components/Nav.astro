@@ -1,0 +1,37 @@
+---
+interface Props {
+  lang: string;
+  nav: { label: string; path: string }[];
+  otherLangs: readonly string[];
+  labels: Record<string, string>;
+  toggleHref: (target: string) => string;
+}
+const { lang, nav, otherLangs, labels, toggleHref } = Astro.props;
+const prefix = lang === "zh-CN" ? "" : `/${lang}`;
+---
+<nav class="nav">
+  <a class="brand" href={`${prefix}/`}>Hao&#39;s Blog</a>
+  <ul>
+    {nav.map((item) => (
+      <li><a href={`${prefix}${item.path}`}>{item.label}</a></li>
+    ))}
+  </ul>
+  <div class="lang">
+    {otherLangs.map((target) => (
+      <a href={toggleHref(target)} hreflang={target}>{labels[target] ?? target}</a>
+    ))}
+  </div>
+</nav>
+<style>
+  .nav {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    max-width: 46rem; margin: 0 auto; padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { font-weight: 600; text-decoration: none; color: var(--fg); margin-right: auto; }
+  ul { display: flex; gap: 1rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+  a { text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .lang a { opacity: .7; }
+  .lang a:hover { opacity: 1; }
+</style>

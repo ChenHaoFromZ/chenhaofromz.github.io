@@ -1,0 +1,93 @@
+---
+import { SITE, LOCALES, DEFAULT_LOCALE, NAV, LOCALE_LABEL } from "../consts";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: string;
+  /** 其他语言版本的 URL，用于 hreflang */
+  alternates?: { lang: string; url: string }[];
+  /** 当前页面在各语言下的路径（不含语言前缀），供切换器使用 */
+  basePath?: string;
+  /** 该页面在目标语言下是否存在对应版本；false 时回退到目标语言首页 */
+  counterpartExists?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  lang = DEFAULT_LOCALE,
+  alternates = [],
+  basePath = "/",
+  counterpartExists = true,
+} = Astro.props;
+
+// 文章页会显式传入 alternates；列表页/静态页按语言前缀自动推导
+const resolvedAlternates =
+  alternates.length > 0
+    ? alternates
+    : LOCALES.map((l) => ({
+        lang: l,
+        url: `${l === DEFAULT_LOCALE ? "" : `/${l}`}${basePath}`,
+      }));
+
+const fullTitle = title ? `${title} | ${SITE.title}` : `${SITE.title} - ${SITE.subtitle}`;
+const canonical = new URL(Astro.url.pathname, SITE.url).href;
+
+// 语言按钮目标：存在对应版本就换前缀；否则回退目标语言首页
+const otherLangs = LOCALES.filter((l) => l !== lang);
+const toggleHref = (target: string) => {
+  const prefix = target === DEFAULT_LOCALE ? "" : `/${target}`;
+  return counterpartExists ? `${prefix}${basePath}` : `${prefix}/`;
+};
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <link rel="canonical" href={canonical} />
+    {resolvedAlternates.map((a) => (
+      <link rel="alternate" hreflang={a.lang} href={new URL(a.url, SITE.url).href} />
+    ))}
+    {resolvedAlternates.length > 0 && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={new URL(resolvedAlternates.find((a) => a.lang === DEFAULT_LOCALE)?.url ?? "", SITE.url).href}
+      />
+    )}
+    {/* 放一张自己的图标到 public/images/ 后在这里引用，例如 <link rel="icon" href="/images/favicon.png" /> */}
+    <style is:global>
+      :root { --fg:#1f2328; --muted:#6b7280; --bg:#fff; --line:#e5e7eb; --accent:#a31f34; }
+      @media (prefers-color-scheme: dark) {
+        :root { --fg:#e6edf3; --muted:#9aa4b2; --bg:#0d1117; --line:#30363d; --accent:#ff6b81; }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin:0; background:var(--bg); color:var(--fg);
+        font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans SC", sans-serif;
+        line-height:1.75;
+      }
+      main { max-width: 46rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+      a { color: var(--accent); }
+      h1, h2, h3 { line-height:1.3; }
+      pre { padding:1rem; overflow:auto; border:1px solid var(--line); border-radius:.5rem; }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.92em; }
+      .meta { color: var(--muted); font-size:.875rem; }
+      img { max-width: 100%; height: auto; }
+    </style>
+  </head>
+  <body>
+    <Nav lang={lang} toggleHref={toggleHref} labels={LOCALE_LABEL} otherLangs={otherLangs} nav={NAV} />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

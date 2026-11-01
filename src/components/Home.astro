@@ -1,0 +1,32 @@
+---
+import { SITE } from "../consts";
+import PostList from "./PostList.astro";
+import { byLang, type Post } from "../lib/posts";
+
+interface Props {
+  lang: string;
+  posts: Post[];
+}
+const { lang, posts } = Astro.props;
+const isEn = lang === "en";
+---
+<section class="intro">
+  <h1>{SITE.title}</h1>
+  <p class="lead">{isEn ? SITE.subtitle : "记录我在 AI 方向上的学习与实践。"}</p>
+  <p class="meta">
+    {isEn
+      ? "Undergraduate in Artificial Intelligence. I write about what I build and what I learn from it."
+      : "人工智能专业本科生。这里记录我做过的事、学到的东西，以及踩过的坑。"}
+  </p>
+</section>
+
+<section>
+  <h2>{isEn ? "Recent posts" : "最近文章"}</h2>
+  <PostList posts={posts} lang={lang} />
+  <p><a href={isEn ? "/en/archives/" : "/archives/"}>{isEn ? "All posts →" : "全部文章 →"}</a></p>
+</section>
+<style>
+  .intro { margin-bottom: 2.5rem; }
+  .lead { font-size: 1.25rem; margin: .25rem 0; }
+  .meta { color: var(--muted); }
+</style>

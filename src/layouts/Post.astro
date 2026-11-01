@@ -1,0 +1,47 @@
+---
+import { render } from "astro:content";
+import Base from "./Base.astro";
+import Waline from "../components/Waline.astro";
+import { SITE } from "../consts";
+import {
+  alternatesOf,
+  formatDate,
+  translationsOf,
+  type Post,
+} from "../lib/posts";
+
+interface Props {
+  post: Post;
+  all: Post[];
+}
+const { post, all } = Astro.props;
+const { Content } = await render(post);
+const { data } = post;
+const others = translationsOf(post, all);
+const langPrefix = data.lang === "zh-CN" ? "" : `/${data.lang}`;
+---
+<Base
+  title={data.title}
+  description={data.summary}
+  lang={data.lang}
+  alternates={alternatesOf(post, all)}
+  basePath={Astro.url.pathname.replace(langPrefix, "")}
+  counterpartExists={others.length > 0}
+>
+  <article>
+    <h1>{data.title}</h1>
+    <p class="meta">
+      <time datetime={data.date.toISOString()}>{formatDate(data.date, data.lang)}</time>
+      {data.tags.length > 0 && <span> · {data.tags.join(" / ")}</span>}
+    </p>
+    <Content />
+  </article>
+
+  <section class="comments">
+    <h2>评论 / Comments</h2>
+    <Waline serverURL={SITE.walineServerUrl} lang={data.lang} />
+  </section>
+</Base>
+<style>
+  .comments { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+</style>

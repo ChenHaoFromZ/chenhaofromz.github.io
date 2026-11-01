@@ -1,0 +1,10 @@
+---
+import Base from "../layouts/Base.astro";
+import Home from "../components/Home.astro";
+import { byLang } from "../lib/posts";
+
+const posts = await byLang("zh-CN");
+---
+<Base lang="zh-CN" basePath="/">
+  <Home lang="zh-CN" posts={posts} />
+</Base>

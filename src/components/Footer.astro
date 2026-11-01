@@ -1,0 +1,16 @@
+---
+import { SITE } from "../consts";
+const year = new Date().getFullYear();
+---
+<footer>
+  <span>© {year} {SITE.author}</span>
+  <span>·</span>
+  <a href="https://github.com/ChenHaoFromZ">GitHub</a>
+</footer>
+<style>
+  footer {
+    display: flex; gap: .5rem; justify-content: center;
+    padding: 2rem 1.25rem; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: .875rem;
+  }
+</style>

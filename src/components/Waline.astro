@@ -1,0 +1,27 @@
+---
+interface Props {
+  serverURL: string;
+  lang: string;
+}
+const { serverURL, lang } = Astro.props;
+---
+<div id="waline" data-server={serverURL} data-lang={lang}></div>
+<script>
+  import { init } from "@waline/client";
+  import "@waline/client/style";
+
+  const el = document.getElementById("waline");
+  if (el && el.dataset.server) {
+    init({
+      el: "#waline",
+      serverURL: el.dataset.server,
+      lang: el.dataset.lang,
+      // 评论按 path 归属：中英两版各有独立评论区
+      path: location.pathname,
+      requiredMeta: ["nick", "mail"],
+      dark: "auto",
+      // 关掉内置 emoji 面板：其资源在 unpkg CDN 上，且与 Hexo 时代配置一致
+      emoji: [],
+    });
+  }
+</script>

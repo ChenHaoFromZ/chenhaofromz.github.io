@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+
+# 草稿：私有，绝不进公开仓库（对应 Hexo 时代 gitignore 的 source/_drafts/）
+drafts/
+
+.DS_Store
+*.log
+.npm-cache/

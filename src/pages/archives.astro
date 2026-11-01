@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import PostList from "../components/PostList.astro";
+import { byLang, type Post } from "../lib/posts";
+
+const posts = await byLang("zh-CN");
+const years = new Map<number, Post[]>();
+for (const post of posts) {
+  const y = post.data.date.getFullYear();
+  years.set(y, [...(years.get(y) ?? []), post]);
+}
+---
+<Base title="归档 / Archive" lang="zh-CN" basePath="/archives/">
+  <h1>归档 / Archive</h1>
+  {[...years.entries()].map(([year, list]) => (
+    <section>
+      <h2>{year}</h2>
+      <PostList posts={list} lang="zh-CN" />
+    </section>
+  ))}
+</Base>

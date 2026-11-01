@@ -1,0 +1,28 @@
+---
+import Base from "../../layouts/Base.astro";
+
+const projects = [
+  {
+    name: "(project name)",
+    period: "2026",
+    summary: "One sentence on the problem it solves.",
+    tags: ["AI", "Agent"],
+    link: "",
+  },
+];
+---
+<Base title="Projects" lang="en" basePath="/projects/">
+  <h1>Projects</h1>
+  {projects.map((p) => (
+    <article class="project">
+      <h2>{p.link ? <a href={p.link}>{p.name}</a> : p.name}</h2>
+      <p class="meta">{p.period}{p.tags.length > 0 && ` · ${p.tags.join(" / ")}`}</p>
+      <p>{p.summary}</p>
+    </article>
+  ))}
+</Base>
+<style>
+  .project { padding: 1rem 0; border-bottom: 1px solid var(--line); }
+  .project:last-child { border-bottom: 0; }
+  .meta { color: var(--muted); font-size: .875rem; }
+</style>

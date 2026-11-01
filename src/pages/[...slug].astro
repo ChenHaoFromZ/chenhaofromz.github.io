@@ -1,0 +1,16 @@
+---
+import Post from "../layouts/Post.astro";
+import { published, urlOf } from "../lib/posts";
+
+export async function getStaticPaths() {
+  const all = await published();
+  return all.map((post) => ({
+    // 路径由 date + slug 推导，保持与 Hexo 时代一致
+    params: { slug: urlOf(post).replace(/^\//, "").replace(/\/$/, "") },
+    props: { post, all },
+  }));
+}
+
+const { post, all } = Astro.props;
+---
+<Post post={post} all={all} />
